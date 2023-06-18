@@ -111,7 +111,12 @@ function LayoutProvider({ children }: { children: React.ReactNode }) {
           ) : (
             currentUser && (
               <div className="layout-parent">
-                <div className="sidebar">
+                <div
+                  className="sidebar"
+                  style={{
+                    width: isSidebarExpanded ? "250px" : "auto",
+                  }}
+                >
                   <div className="logo">
                     {isSidebarExpanded && <h1>SHEYJOBS</h1>}
 
@@ -152,11 +157,10 @@ function LayoutProvider({ children }: { children: React.ReactNode }) {
                     })}
                   </div>
 
-                  <div className="user-info">
+                  <div className="user-info flex justify-between items-center">
                     {isSidebarExpanded && (
                       <div className="flex flex-col">
                         <span>{currentUser?.name}</span>
-                        <span>{currentUser?.email}</span>
                       </div>
                     )}
 
