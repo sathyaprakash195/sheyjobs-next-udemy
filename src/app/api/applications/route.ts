@@ -10,31 +10,32 @@ export async function POST(request: NextRequest) {
   try {
     await validateJWT(request);
     const reqBody = await request.json();
-    const newApplication = new Application(reqBody);
-    const application: any = (
-      await (await newApplication.save()).populate("user")
-    ).populate({
-      path: "job",
-      populate: {
-        path: "user",
-      },
-    });
+    const application: any = await Application.create(reqBody);
+
+    const applicationData: any = await Application.findById(application._id)
+      .populate("user")
+      .populate({
+        path: "job",
+        populate: {
+          path: "user",
+        },
+      });
 
     await sendEmail({
-      to: application?.job?.user?.email,
+      to: applicationData.job.user.email,
       subject: "New application received",
-      text: `You have received a new application from ${application.user.name}`,
+      text: `You have received a new application from ${applicationData.user.name}`,
       html: `<div>
-      <p>You have received a new application from ${application.user.name}</p>
-      <p>Applicant's name is ${application.user.name}</p>
-      <p>Applicant's email: ${application.user.email}</p>
-      <p>Applicant's phone number: ${application.user.phone}</p>
+      <p>You have received a new application from ${applicationData.user.name}</p>
+      <p>Applicant's name is ${applicationData.user.name}</p>
+      <p>Applicant's email: ${applicationData.user.email}</p>
+      <p>Applicant's phone number: ${applicationData.user.phone}</p>
       </div>`,
     });
 
     return NextResponse.json({
       message: "You have successfully applied for this job",
-      data: application,
+      data: applicationData,
     });
   } catch (error: any) {
     console.log(error);
