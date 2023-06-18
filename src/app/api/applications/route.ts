@@ -10,10 +10,15 @@ export async function POST(request: NextRequest) {
   try {
     await validateJWT(request);
     const reqBody = await request.json();
-    const application: any = await Application.create(reqBody);
+    const application: any = (await Application.create(reqBody)).populate({
+      path: "job",
+      populate: {
+        path: "user",
+      },
+    });
 
     await sendEmail({
-      to: application.job.user.email,
+      to: application?.job?.user?.email,
       subject: "New application received",
       text: `You have received a new application from ${application.user.name}`,
       html: `<div>
