@@ -10,7 +10,10 @@ export async function POST(request: NextRequest) {
   try {
     await validateJWT(request);
     const reqBody = await request.json();
-    const application: any = (await Application.create(reqBody)).populate({
+    const newApplication = new Application(reqBody);
+    const application: any = (
+      await (await newApplication.save()).populate("user")
+    ).populate({
       path: "job",
       populate: {
         path: "user",
